@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      routes: routes,
         home: new HomeScreen());
   }
 }
@@ -28,10 +29,11 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.orange,
         onPressed: () {
           print("Clicked");
-          Navigator.push(
-            context,
-            new MaterialPageRoute(builder: (context) => new NewsFragment()),
-          );
+//          Navigator.push(
+//            context,
+//            new MaterialPageRoute(builder: (context) => new NewsFragment()),
+//          );
+          Navigator.of(context).pushNamed("news");
         },
       ),
     );
