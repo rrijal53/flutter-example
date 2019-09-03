@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'news.dart';
+import 'package:dio/dio.dart';
 
 final routes = <String, WidgetBuilder>{
   "news": (context) => NewsFragment(),
@@ -36,19 +39,21 @@ class HomeScreen extends StatelessWidget {
           ),
           new TextField(
             controller: controllerPassword,
-          ), new RaisedButton(child: new Text("Login"),onPressed: (){
-              String uname = controllerUsername.text;
-              String password = controllerPassword.text;
-              print(uname + " " + password);
-              if(uname.isEmpty){
-                showToast("Please enter valid username");
-              }else if(password.length < 6){
-                showToast("Password must be more than 6 character");
-              }else{
-                showToast("Logged in");
-
-              }
-          })
+          ),
+          new RaisedButton(
+              child: new Text("Login"),
+              onPressed: () {
+                String uname = controllerUsername.text;
+                String password = controllerPassword.text;
+                print(uname + " " + password);
+                if (uname.isEmpty) {
+                  showToast("Please enter valid username");
+                } else if (password.length < 6) {
+                  showToast("Password must be more than 6 character");
+                } else {
+                  showToast("Logged in");
+                }
+              })
         ],
       ),
       floatingActionButton: new FloatingActionButton(
@@ -56,17 +61,40 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.orange,
         onPressed: () {
           print("Clicked");
-          Navigator.push(
-            context,
-            new MaterialPageRoute(builder: (context) => new NewsFragment()),
-          );
-//          Navigator.of(context).pushNamed("news");
+          register().then((success){
+             Navigator.pushNamed(context,"news");
+          });
         },
       ),
     );
   }
 
-  showToast(String s){
+  Future<bool> register() async {
+    try {
+      Dio dio = new Dio();
+//      dio.options.baseUrl = "http://10.0.2.2/";
+      FormData formData = new FormData.from({
+        "action": "register",
+        "username": "rrijal53@yahoo.com",
+        "password": "password"
+      });
+      Response response = await Dio().post("http://10.0.2.2:8888/aa/api.php", data: formData );
+      Map valueMap = json.decode(response.data);
+      bool success =valueMap['success'];
+      return success;
+//      print(valueMap['success']);
+//      print(valueMap['username']);
+//      if(valueMap['success']){
+//        showToast("Register successfully");
+//      }else{
+//
+//      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  showToast(String s) {
     Fluttertoast.showToast(
         msg: s,
         toastLength: Toast.LENGTH_SHORT,
@@ -74,7 +102,6 @@ class HomeScreen extends StatelessWidget {
         timeInSecForIos: 3,
         backgroundColor: Colors.red,
         textColor: Colors.white,
-        fontSize: 16.0
-    );
+        fontSize: 16.0);
   }
 }
